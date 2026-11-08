@@ -1,5 +1,7 @@
 # Expense Tracker (Python + Flask)
 
+![Expense Tracker screenshot](screenshot.png)
+
 A small web app for recording daily expenses, filtering them by category, and viewing a spending summary. It started as a command-line tool and was extended with a Flask web interface that reuses the same core logic. Data is saved locally in a JSON file.
 
 ## Features
