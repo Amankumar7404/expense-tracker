@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Expense Tracker</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <main>
+      <h1>Expense Tracker</h1>
+
+      {% for category, message in get_flashed_messages(with_categories=true) %}
+      <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+
+      <section class="card">
+        <h2>Add an expense</h2>
+        <form method="post" action="{{ url_for('add') }}" class="add-form">
+          <input
+            type="number"
+            name="amount"
+            placeholder="Amount"
+            step="0.01"
+            min="0.01"
+            required
+          />
+          <input
+            type="text"
+            name="category"
+            placeholder="Category (e.g. food)"
+            list="category-list"
+            required
+          />
+          <datalist id="category-list">
+            {% for c in categories %}
+            <option value="{{ c }}">{% endfor %}</option>
+          </datalist>
+          <input type="text" name="note" placeholder="Note (optional)" />
+          <button type="submit">Add</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Summary</h2>
+        {% if breakdown %}
+        <p class="total">
+          Total spent: <strong>{{ "%.2f"|format(total) }}</strong>
+        </p>
+        {% for row in breakdown %}
+        <div class="bar-row">
+          <span class="bar-label">{{ row.category }}</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: {{ row.percent }}%"></div>
+          </div>
+          <span class="bar-value"
+            >{{ "%.2f"|format(row.amount) }} ({{ row.percent }}%)</span
+          >
+        </div>
+        {% endfor %} {% else %}
+        <p class="muted">Nothing to summarize yet.</p>
+        {% endif %}
+      </section>
+
+      <section class="card">
+        <div class="list-header">
+          <h2>Expenses</h2>
+          <form
+            method="get"
+            action="{{ url_for('index') }}"
+            class="filter-form"
+          >
+            <select name="category" onchange="this.form.submit()">
+              <option value="">All categories</option>
+              {% for c in categories %} {% if c == selected %}
+              <option value="{{ c }}" selected>{{ c }}</option>
+              {% else %}
+              <option value="{{ c }}">{{ c }}</option>
+              {% endif %} {% endfor %}
+            </select>
+          </form>
+        </div>
+
+        {% if expenses %}
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th class="num">Amount</th>
+              <th>Category</th>
+              <th>Note</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in expenses %}
+            <tr>
+              <td>{{ e.date }}</td>
+              <td class="num">{{ "%.2f"|format(e.amount) }}</td>
+              <td>{{ e.category }}</td>
+              <td>{{ e.note }}</td>
+              <td>
+                <form
+                  method="post"
+                  action="{{ url_for('delete', expense_id=e.id) }}"
+                  onsubmit="return confirm('Delete this expense?');"
+                >
+                  <button type="submit" class="danger">Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p class="muted">No expenses found.</p>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>
