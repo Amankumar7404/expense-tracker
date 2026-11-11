@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Register - Expense Tracker</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <main class="narrow">
+      <h1>Expense Tracker</h1>
+
+      {% for category, message in get_flashed_messages(with_categories=true) %}
+      <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+
+      <section class="card">
+        <h2>Create an account</h2>
+        <form
+          method="post"
+          action="{{ url_for('register') }}"
+          class="auth-form"
+        >
+          <input
+            type="text"
+            name="username"
+            placeholder="Username (3-20 letters, numbers, _)"
+            autocomplete="username"
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password (at least 8 characters)"
+            autocomplete="new-password"
+            required
+          />
+          <button type="submit">Register</button>
+        </form>
+        <p class="muted">
+          Already have an account? <a href="{{ url_for('login') }}">Log in</a>
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

@@ -6,10 +6,16 @@ from tracker import load_expenses
 
 @pytest.fixture
 def client_and_file(tmp_path):
+    """A test client that is already registered and logged in."""
     data_file = tmp_path / "test_expenses.json"
-    app = create_app(data_file)
+    app = create_app(data_file, tmp_path / "test_users.json", jwt_secret="t" * 40)
     app.config["TESTING"] = True
-    return app.test_client(), data_file
+    client = app.test_client()
+    client.post(
+        "/register",
+        data={"username": "tester", "password": "password123"},
+    )
+    return client, data_file
 
 
 def add(client, amount, category, note=""):
@@ -25,6 +31,7 @@ def test_home_page_loads_empty(client_and_file):
     response = client.get("/")
     assert response.status_code == 200
     assert b"No expenses found" in response.data
+    assert b"<strong>Tester</strong>" in response.data
 
 
 def test_add_expense_shows_on_page_and_is_saved(client_and_file):
@@ -32,7 +39,9 @@ def test_add_expense_shows_on_page_and_is_saved(client_and_file):
     response = add(client, "250", "Food", "Lunch")
     assert b"Added 250.00 to food" in response.data
     assert b"Lunch" in response.data
-    assert len(load_expenses(data_file)) == 1
+    saved = load_expenses(data_file)
+    assert len(saved) == 1
+    assert saved[0]["owner"] == "tester"
 
 
 def test_invalid_amount_shows_error(client_and_file):

@@ -11,7 +11,19 @@
   </head>
   <body>
     <main>
-      <h1>Expense Tracker</h1>
+      <div class="topbar">
+        <h1>Expense Tracker</h1>
+        <form
+          method="post"
+          action="{{ url_for('logout') }}"
+          class="logout-form"
+        >
+          <span class="muted"
+            >Signed in as <strong>{{ username|capitalize }}</strong></span
+          >
+          <button type="submit" class="secondary">Log out</button>
+        </form>
+      </div>
 
       {% for category, message in get_flashed_messages(with_categories=true) %}
       <div class="flash {{ category }}">{{ message }}</div>

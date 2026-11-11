@@ -34,6 +34,37 @@ main {
 h1 {
   margin: 0 0 16px;
 }
+
+main.narrow {
+  max-width: 420px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.logout-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+button.secondary {
+  background: var(--muted);
+  padding: 6px 12px;
+}
+
+.auth-form {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+a {
+  color: var(--accent);
+}
 h2 {
   margin: 0 0 12px;
   font-size: 1.1rem;

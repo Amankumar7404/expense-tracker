@@ -36,8 +36,12 @@ def save_expenses(expenses, path=DATA_FILE):
         json.dump(expenses, f, indent=2)
 
 
-def add_expense(expenses, amount, category, note=""):
-    """Add a new expense and return it. Raises ValueError for bad input."""
+def add_expense(expenses, amount, category, note="", owner=None):
+    """Add a new expense and return it. Raises ValueError for bad input.
+
+    `owner` is the username the expense belongs to (used by the web app).
+    The command-line version leaves it out.
+    """
     if not math.isfinite(amount) or amount <= 0:
         raise ValueError("Amount must be a positive number.")
     if not category.strip():
@@ -51,17 +55,27 @@ def add_expense(expenses, amount, category, note=""):
         "category": category.strip().lower(),
         "note": note.strip(),
     }
+    if owner is not None:
+        expense["owner"] = owner
     expenses.append(expense)
     return expense
 
 
-def delete_expense(expenses, expense_id):
-    """Delete an expense by ID. Returns True if deleted, False if not found."""
+def delete_expense(expenses, expense_id, owner=None):
+    """Delete an expense by ID. Returns True if deleted, False if not found.
+
+    If `owner` is given, only that user's expenses can be deleted.
+    """
     for i, e in enumerate(expenses):
-        if e["id"] == expense_id:
+        if e["id"] == expense_id and (owner is None or e.get("owner") == owner):
             del expenses[i]
             return True
     return False
+
+
+def filter_by_owner(expenses, owner):
+    """Return only the expenses that belong to `owner`."""
+    return [e for e in expenses if e.get("owner") == owner]
 
 
 def filter_by_category(expenses, category):
@@ -140,9 +154,7 @@ def main(argv=None):
         print(f"Added expense #{e['id']}: {e['amount']:.2f} on {e['category']}")
 
     elif args.command == "list":
-        shown = (
-            filter_by_category(expenses, args.category) if args.category else expenses
-        )
+        shown = filter_by_category(expenses, args.category) if args.category else expenses
         print_table(shown)
 
     elif args.command == "summary":

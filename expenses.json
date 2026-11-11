@@ -5,5 +5,13 @@
     "amount": 100.0,
     "category": "haircut",
     "note": ""
+  },
+  {
+    "id": 2,
+    "date": "2026-11-12",
+    "amount": 1000.0,
+    "category": "haircut",
+    "note": "",
+    "owner": "aman"
   }
 ]
